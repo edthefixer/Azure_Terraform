@@ -1,0 +1,673 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualNetworks_vnet_etf1_test_use_001_name": {
+            "defaultValue": "vnet-etf1-test-use-001",
+            "type": "String"
+        },
+        "routeTables_route_avd_etf1_test_use_001_name": {
+            "defaultValue": "route-avd-etf1-test-use-001",
+            "type": "String"
+        },
+        "networkSecurityGroups_nsg_avd_etf1_test_use_001_name": {
+            "defaultValue": "nsg-avd-etf1-test-use-001",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2024-07-01",
+            "name": "[parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name')]",
+            "location": "eastus",
+            "tags": {
+                "cm-resource-parent": "/subscriptions/bd67233d-38af-45db-a98e-a10a2b443d8d/resourceGroups/rg-avd-etf1-test-use-service-objects/providers/Microsoft.DesktopVirtualization/hostpools/vdpool-etf1-test-use-001",
+                "Environment": "Test",
+                "ServiceWorkload": "AVD",
+                "CreationTimeUTC": "20260220T165154Z"
+            },
+            "properties": {
+                "flushConnection": false,
+                "securityRules": [
+                    {
+                        "name": "AVDServiceTraffic",
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), 'AVDServiceTraffic')]",
+                        "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+                        "properties": {
+                            "description": "Session host traffic to AVD control plane",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "443",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "destinationAddressPrefix": "WindowsVirtualDesktop",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "AzureCloud",
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), 'AzureCloud')]",
+                        "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+                        "properties": {
+                            "description": "Session host traffic to Azure cloud services",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "8443",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "destinationAddressPrefix": "AzureCloud",
+                            "access": "Allow",
+                            "priority": 110,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "AzureMonitor",
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), 'AzureMonitor')]",
+                        "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+                        "properties": {
+                            "description": "Session host traffic to Azure Monitor",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "443",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "destinationAddressPrefix": "AzureMonitor",
+                            "access": "Allow",
+                            "priority": 120,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "AzureMarketPlace",
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), 'AzureMarketPlace')]",
+                        "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+                        "properties": {
+                            "description": "Session host traffic to Azure Monitor",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "443",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "destinationAddressPrefix": "AzureFrontDoor.Frontend",
+                            "access": "Allow",
+                            "priority": 130,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "WindowsActivationKMS",
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), 'WindowsActivationKMS')]",
+                        "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+                        "properties": {
+                            "description": "Session host traffic to Windows license activation services",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "1688",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 140,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": [
+                                "20.118.99.224",
+                                "40.83.235.53",
+                                "23.102.135.246"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "AzureInstanceMetadata",
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), 'AzureInstanceMetadata')]",
+                        "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+                        "properties": {
+                            "description": "Session host traffic to Azure instance metadata",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "80",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "destinationAddressPrefix": "169.254.169.254",
+                            "access": "Allow",
+                            "priority": 150,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "RDPShortpath",
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), 'RDPShortpath')]",
+                        "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+                        "properties": {
+                            "description": "Session host traffic to Azure instance metadata",
+                            "protocol": "Udp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3390",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 150,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "RDPShortpathTurnStun",
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), 'RDPShortpathTurnStun')]",
+                        "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+                        "properties": {
+                            "description": "Session host traffic to RDP shortpath STUN/TURN",
+                            "protocol": "Udp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3478",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "destinationAddressPrefix": "20.202.0.0/16",
+                            "access": "Allow",
+                            "priority": 160,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "RDPShortpathTurnRelay",
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), 'RDPShortpathTurnRelay')]",
+                        "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+                        "properties": {
+                            "description": "Session host traffic to RDP shortpath STUN/TURN",
+                            "protocol": "Udp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3478",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "destinationAddressPrefix": "51.5.0.0/16",
+                            "access": "Allow",
+                            "priority": 170,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "2024-07-01",
+            "name": "[parameters('routeTables_route_avd_etf1_test_use_001_name')]",
+            "location": "eastus",
+            "tags": {
+                "cm-resource-parent": "/subscriptions/bd67233d-38af-45db-a98e-a10a2b443d8d/resourceGroups/rg-avd-etf1-test-use-service-objects/providers/Microsoft.DesktopVirtualization/hostpools/vdpool-etf1-test-use-001",
+                "Environment": "Test",
+                "ServiceWorkload": "AVD",
+                "CreationTimeUTC": "20260220T165154Z"
+            },
+            "properties": {
+                "disableBgpRoutePropagation": false,
+                "routes": [
+                    {
+                        "name": "AVDServiceTraffic",
+                        "id": "[resourceId('Microsoft.Network/routeTables/routes', parameters('routeTables_route_avd_etf1_test_use_001_name'), 'AVDServiceTraffic')]",
+                        "properties": {
+                            "addressPrefix": "WindowsVirtualDesktop",
+                            "nextHopType": "Internet"
+                        },
+                        "type": "Microsoft.Network/routeTables/routes"
+                    },
+                    {
+                        "name": "AVDStunInfraTurnRelayTraffic",
+                        "id": "[resourceId('Microsoft.Network/routeTables/routes', parameters('routeTables_route_avd_etf1_test_use_001_name'), 'AVDStunInfraTurnRelayTraffic')]",
+                        "properties": {
+                            "addressPrefix": "20.202.0.0/16",
+                            "nextHopType": "Internet"
+                        },
+                        "type": "Microsoft.Network/routeTables/routes"
+                    },
+                    {
+                        "name": "AVDTurnRelayTraffic",
+                        "id": "[resourceId('Microsoft.Network/routeTables/routes', parameters('routeTables_route_avd_etf1_test_use_001_name'), 'AVDTurnRelayTraffic')]",
+                        "properties": {
+                            "addressPrefix": "51.5.0.0/16",
+                            "nextHopType": "Internet"
+                        },
+                        "type": "Microsoft.Network/routeTables/routes"
+                    },
+                    {
+                        "name": "DirectRouteToKMS",
+                        "id": "[resourceId('Microsoft.Network/routeTables/routes', parameters('routeTables_route_avd_etf1_test_use_001_name'), 'DirectRouteToKMS')]",
+                        "properties": {
+                            "addressPrefix": "20.118.99.224/32",
+                            "nextHopType": "Internet"
+                        },
+                        "type": "Microsoft.Network/routeTables/routes"
+                    },
+                    {
+                        "name": "DirectRouteToKMS01",
+                        "id": "[resourceId('Microsoft.Network/routeTables/routes', parameters('routeTables_route_avd_etf1_test_use_001_name'), 'DirectRouteToKMS01')]",
+                        "properties": {
+                            "addressPrefix": "40.83.235.53/32",
+                            "nextHopType": "Internet"
+                        },
+                        "type": "Microsoft.Network/routeTables/routes"
+                    },
+                    {
+                        "name": "DirectRouteToKMS02",
+                        "id": "[resourceId('Microsoft.Network/routeTables/routes', parameters('routeTables_route_avd_etf1_test_use_001_name'), 'DirectRouteToKMS02')]",
+                        "properties": {
+                            "addressPrefix": "23.102.135.246/32",
+                            "nextHopType": "Internet"
+                        },
+                        "type": "Microsoft.Network/routeTables/routes"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), '/AVDServiceTraffic')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "description": "Session host traffic to AVD control plane",
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "443",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "destinationAddressPrefix": "WindowsVirtualDesktop",
+                "access": "Allow",
+                "priority": 100,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), '/AzureCloud')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "description": "Session host traffic to Azure cloud services",
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "8443",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "destinationAddressPrefix": "AzureCloud",
+                "access": "Allow",
+                "priority": 110,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), '/AzureInstanceMetadata')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "description": "Session host traffic to Azure instance metadata",
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "80",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "destinationAddressPrefix": "169.254.169.254",
+                "access": "Allow",
+                "priority": 150,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), '/AzureMarketPlace')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "description": "Session host traffic to Azure Monitor",
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "443",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "destinationAddressPrefix": "AzureFrontDoor.Frontend",
+                "access": "Allow",
+                "priority": 130,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), '/AzureMonitor')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "description": "Session host traffic to Azure Monitor",
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "443",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "destinationAddressPrefix": "AzureMonitor",
+                "access": "Allow",
+                "priority": 120,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), '/RDPShortpath')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "description": "Session host traffic to Azure instance metadata",
+                "protocol": "Udp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "3390",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "destinationAddressPrefix": "VirtualNetwork",
+                "access": "Allow",
+                "priority": 150,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), '/RDPShortpathTurnRelay')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "description": "Session host traffic to RDP shortpath STUN/TURN",
+                "protocol": "Udp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "3478",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "destinationAddressPrefix": "51.5.0.0/16",
+                "access": "Allow",
+                "priority": 170,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), '/RDPShortpathTurnStun')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "description": "Session host traffic to RDP shortpath STUN/TURN",
+                "protocol": "Udp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "3478",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "destinationAddressPrefix": "20.202.0.0/16",
+                "access": "Allow",
+                "priority": 160,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'), '/WindowsActivationKMS')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "description": "Session host traffic to Windows license activation services",
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "1688",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "access": "Allow",
+                "priority": 140,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": [
+                    "20.118.99.224",
+                    "40.83.235.53",
+                    "23.102.135.246"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('routeTables_route_avd_etf1_test_use_001_name'), '/AVDServiceTraffic')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_route_avd_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "WindowsVirtualDesktop",
+                "nextHopType": "Internet"
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('routeTables_route_avd_etf1_test_use_001_name'), '/AVDStunInfraTurnRelayTraffic')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_route_avd_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "20.202.0.0/16",
+                "nextHopType": "Internet"
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('routeTables_route_avd_etf1_test_use_001_name'), '/AVDTurnRelayTraffic')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_route_avd_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "51.5.0.0/16",
+                "nextHopType": "Internet"
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('routeTables_route_avd_etf1_test_use_001_name'), '/DirectRouteToKMS')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_route_avd_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "20.118.99.224/32",
+                "nextHopType": "Internet"
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('routeTables_route_avd_etf1_test_use_001_name'), '/DirectRouteToKMS01')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_route_avd_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "40.83.235.53/32",
+                "nextHopType": "Internet"
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('routeTables_route_avd_etf1_test_use_001_name'), '/DirectRouteToKMS02')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_route_avd_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "23.102.135.246/32",
+                "nextHopType": "Internet"
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2024-07-01",
+            "name": "[parameters('virtualNetworks_vnet_etf1_test_use_001_name')]",
+            "location": "eastus",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'))]",
+                "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_route_avd_etf1_test_use_001_name'))]"
+            ],
+            "tags": {
+                "cm-resource-parent": "/subscriptions/bd67233d-38af-45db-a98e-a10a2b443d8d/resourceGroups/rg-avd-etf1-test-use-service-objects/providers/Microsoft.DesktopVirtualization/hostpools/vdpool-etf1-test-use-001",
+                "Environment": "Test",
+                "ServiceWorkload": "AVD",
+                "CreationTimeUTC": "20260220T165154Z"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.10.0.0/16"
+                    ]
+                },
+                "privateEndpointVNetPolicies": "Disabled",
+                "subnets": [
+                    {
+                        "name": "snet-avd-etf1-test-use-001",
+                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_vnet_etf1_test_use_001_name'), 'snet-avd-etf1-test-use-001')]",
+                        "properties": {
+                            "addressPrefix": "10.10.1.0/24",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'))]"
+                            },
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_route_avd_etf1_test_use_001_name'))]"
+                            },
+                            "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "eastus",
+                                        "westus",
+                                        "westus3"
+                                    ]
+                                },
+                                {
+                                    "service": "Microsoft.KeyVault",
+                                    "locations": [
+                                        "*"
+                                    ]
+                                }
+                            ],
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Disabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        },
+                        "type": "Microsoft.Network/virtualNetworks/subnets"
+                    }
+                ],
+                "virtualNetworkPeerings": [],
+                "enableDdosProtection": false
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2024-07-01",
+            "name": "[concat(parameters('virtualNetworks_vnet_etf1_test_use_001_name'), '/snet-avd-etf1-test-use-001')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_etf1_test_use_001_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'))]",
+                "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_route_avd_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "10.10.1.0/24",
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_avd_etf1_test_use_001_name'))]"
+                },
+                "routeTable": {
+                    "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_route_avd_etf1_test_use_001_name'))]"
+                },
+                "serviceEndpoints": [
+                    {
+                        "service": "Microsoft.Storage",
+                        "locations": [
+                            "eastus",
+                            "westus",
+                            "westus3"
+                        ]
+                    },
+                    {
+                        "service": "Microsoft.KeyVault",
+                        "locations": [
+                            "*"
+                        ]
+                    }
+                ],
+                "delegations": [],
+                "privateEndpointNetworkPolicies": "Disabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+        }
+    ]
+}

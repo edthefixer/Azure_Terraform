@@ -1,0 +1,543 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vaults_kv_sec_etf1_test_use_vx_name": {
+            "defaultValue": "kv-sec-etf1-test-use-vx",
+            "type": "String"
+        },
+        "workspaces_vdws_etf1_test_use_001_name": {
+            "defaultValue": "vdws-etf1-test-use-001",
+            "type": "String"
+        },
+        "hostpools_vdpool_etf1_test_use_001_name": {
+            "defaultValue": "vdpool-etf1-test-use-001",
+            "type": "String"
+        },
+        "scalingplans_vdscaling_etf1_test_use_001_name": {
+            "defaultValue": "vdscaling-etf1-test-use-001",
+            "type": "String"
+        },
+        "applicationgroups_vdag_desktop_etf1_test_use_001_name": {
+            "defaultValue": "vdag-desktop-etf1-test-use-001",
+            "type": "String"
+        },
+        "virtualnetworks_vnet_etf1_test_use_001_externalid": {
+            "defaultValue": "/subscriptions/bd67233d-38af-45db-a98e-a10a2b443d8d/resourceGroups/rg-avd-etf1-test-use-network/providers/microsoft.network/virtualnetworks/vnet-etf1-test-use-001",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.DesktopVirtualization/hostpools",
+            "apiVersion": "2025-03-01-preview",
+            "name": "[parameters('hostpools_vdpool_etf1_test_use_001_name')]",
+            "location": "eastus",
+            "tags": {
+                "cm-resource-parent": "/subscriptions/bd67233d-38af-45db-a98e-a10a2b443d8d/resourceGroups/rg-avd-etf1-test-use-service-objects/providers/Microsoft.DesktopVirtualization/hostpools/vdpool-etf1-test-use-001",
+                "Environment": "Test",
+                "ServiceWorkload": "AVD",
+                "CreationTimeUTC": "20260220T165154Z"
+            },
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "managedPrivateUDP": "Default",
+                "directUDP": "Default",
+                "publicUDP": "Default",
+                "relayUDP": "Default",
+                "managementType": "Standard",
+                "agentUpdate": {
+                    "type": "Scheduled",
+                    "useSessionHostLocalTime": true,
+                    "maintenanceWindowTimeZone": "Eastern Standard Time",
+                    "maintenanceWindows": [
+                        {
+                            "hour": 18,
+                            "dayOfWeek": "Tuesday"
+                        },
+                        {
+                            "hour": 17,
+                            "dayOfWeek": "Friday"
+                        }
+                    ]
+                },
+                "publicNetworkAccess": "Enabled",
+                "friendlyName": "Hostpool etf1 Test eastus 001",
+                "hostPoolType": "Pooled",
+                "customRdpProperty": "audiocapturemode:i:1;audiomode:i:0;drivestoredirect:s:;redirectclipboard:i:1;redirectcomports:i:1;redirectprinters:i:1;redirectsmartcards:i:1;screen mode id:i:2;targetisaadjoined:i:1;enablerdsaadauth:i:1;",
+                "maxSessionLimit": 10,
+                "loadBalancerType": "DepthFirst",
+                "validationEnvironment": false,
+                "ring": 1,
+                "vmTemplate": "{}",
+                "preferredAppGroupType": "Desktop",
+                "startVMOnConnect": true
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[parameters('vaults_kv_sec_etf1_test_use_vx_name')]",
+            "location": "eastus",
+            "tags": {
+                "cm-resource-parent": "/subscriptions/bd67233d-38af-45db-a98e-a10a2b443d8d/resourceGroups/rg-avd-etf1-test-use-service-objects/providers/Microsoft.DesktopVirtualization/hostpools/vdpool-etf1-test-use-001",
+                "Environment": "Test",
+                "ServiceWorkload": "AVD",
+                "CreationTimeUTC": "20260220T165154Z",
+                "Purpose": "Secrets for local admin and domain join credentials"
+            },
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "premium"
+                },
+                "tenantId": "d3edc3c2-c1ad-469e-a53a-7dac46272775",
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "defaultAction": "Deny",
+                    "ipRules": [],
+                    "virtualNetworkRules": [
+                        {
+                            "id": "[concat(parameters('virtualnetworks_vnet_etf1_test_use_001_externalid'), '/subnets/snet-avd-etf1-test-use-001')]"
+                        }
+                    ]
+                },
+                "accessPolicies": [],
+                "enabledForDeployment": true,
+                "enabledForDiskEncryption": true,
+                "enabledForTemplateDeployment": true,
+                "enableSoftDelete": true,
+                "softDeleteRetentionInDays": 7,
+                "enableRbacAuthorization": true,
+                "enablePurgeProtection": true,
+                "vaultUri": "[concat('https://', parameters('vaults_kv_sec_etf1_test_use_vx_name'), '.vault.azure.net/')]",
+                "provisioningState": "Succeeded",
+                "publicNetworkAccess": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.DesktopVirtualization/applicationgroups",
+            "apiVersion": "2025-03-01-preview",
+            "name": "[parameters('applicationgroups_vdag_desktop_etf1_test_use_001_name')]",
+            "location": "eastus",
+            "dependsOn": [
+                "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('hostpools_vdpool_etf1_test_use_001_name'))]"
+            ],
+            "tags": {
+                "cm-resource-parent": "/subscriptions/bd67233d-38af-45db-a98e-a10a2b443d8d/resourceGroups/rg-avd-etf1-test-use-service-objects/providers/Microsoft.DesktopVirtualization/hostpools/vdpool-etf1-test-use-001",
+                "Environment": "Test",
+                "ServiceWorkload": "AVD",
+                "CreationTimeUTC": "20260220T165154Z"
+            },
+            "kind": "Desktop",
+            "properties": {
+                "hostPoolArmPath": "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('hostpools_vdpool_etf1_test_use_001_name'))]",
+                "friendlyName": "desktop etf1 Test eastus 001",
+                "applicationGroupType": "Desktop"
+            }
+        },
+        {
+            "type": "Microsoft.DesktopVirtualization/scalingplans",
+            "apiVersion": "2025-03-01-preview",
+            "name": "[parameters('scalingplans_vdscaling_etf1_test_use_001_name')]",
+            "location": "eastus",
+            "dependsOn": [
+                "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('hostpools_vdpool_etf1_test_use_001_name'))]"
+            ],
+            "tags": {
+                "cm-resource-parent": "/subscriptions/bd67233d-38af-45db-a98e-a10a2b443d8d/resourceGroups/rg-avd-etf1-test-use-service-objects/providers/Microsoft.DesktopVirtualization/hostpools/vdpool-etf1-test-use-001",
+                "Environment": "Test",
+                "ServiceWorkload": "AVD",
+                "CreationTimeUTC": "20260220T165154Z"
+            },
+            "properties": {
+                "description": "[parameters('scalingplans_vdscaling_etf1_test_use_001_name')]",
+                "friendlyName": "[parameters('scalingplans_vdscaling_etf1_test_use_001_name')]",
+                "timeZone": "Eastern Standard Time",
+                "hostPoolType": "Pooled",
+                "exclusionTag": "[concat('exclude-', parameters('scalingplans_vdscaling_etf1_test_use_001_name'))]",
+                "schedules": [
+                    {
+                        "scalingMethod": "PowerManage",
+                        "createDelete": {},
+                        "rampUpStartTime": {
+                            "hour": 9,
+                            "minute": 0
+                        },
+                        "peakStartTime": {
+                            "hour": 10,
+                            "minute": 0
+                        },
+                        "rampDownStartTime": {
+                            "hour": 16,
+                            "minute": 0
+                        },
+                        "offPeakStartTime": {
+                            "hour": 18,
+                            "minute": 0
+                        },
+                        "name": "Weekend-etf1-test-use",
+                        "daysOfWeek": [
+                            "Saturday",
+                            "Sunday"
+                        ],
+                        "rampUpLoadBalancingAlgorithm": "DepthFirst",
+                        "rampUpMinimumHostsPct": 0,
+                        "rampUpCapacityThresholdPct": 90,
+                        "peakLoadBalancingAlgorithm": "DepthFirst",
+                        "rampDownLoadBalancingAlgorithm": "DepthFirst",
+                        "rampDownMinimumHostsPct": 0,
+                        "rampDownCapacityThresholdPct": 90,
+                        "rampDownForceLogoffUsers": true,
+                        "rampDownWaitTimeMinutes": 30,
+                        "rampDownNotificationMessage": "You will be logged off in 30 min. Make sure to save your work.",
+                        "rampDownStopHostsWhen": "ZeroActiveSessions",
+                        "offPeakLoadBalancingAlgorithm": "DepthFirst"
+                    },
+                    {
+                        "scalingMethod": "PowerManage",
+                        "createDelete": {},
+                        "rampUpStartTime": {
+                            "hour": 7,
+                            "minute": 0
+                        },
+                        "peakStartTime": {
+                            "hour": 9,
+                            "minute": 0
+                        },
+                        "rampDownStartTime": {
+                            "hour": 18,
+                            "minute": 0
+                        },
+                        "offPeakStartTime": {
+                            "hour": 20,
+                            "minute": 0
+                        },
+                        "name": "Weekdays-etf1-test-use",
+                        "daysOfWeek": [
+                            "Monday",
+                            "Wednesday",
+                            "Thursday",
+                            "Friday"
+                        ],
+                        "rampUpLoadBalancingAlgorithm": "BreadthFirst",
+                        "rampUpMinimumHostsPct": 20,
+                        "rampUpCapacityThresholdPct": 80,
+                        "peakLoadBalancingAlgorithm": "DepthFirst",
+                        "rampDownLoadBalancingAlgorithm": "DepthFirst",
+                        "rampDownMinimumHostsPct": 0,
+                        "rampDownCapacityThresholdPct": 90,
+                        "rampDownForceLogoffUsers": true,
+                        "rampDownWaitTimeMinutes": 30,
+                        "rampDownNotificationMessage": "You will be logged off in 30 min. Make sure to save your work.",
+                        "rampDownStopHostsWhen": "ZeroActiveSessions",
+                        "offPeakLoadBalancingAlgorithm": "DepthFirst"
+                    },
+                    {
+                        "scalingMethod": "PowerManage",
+                        "createDelete": {},
+                        "rampUpStartTime": {
+                            "hour": 7,
+                            "minute": 0
+                        },
+                        "peakStartTime": {
+                            "hour": 9,
+                            "minute": 0
+                        },
+                        "rampDownStartTime": {
+                            "hour": 19,
+                            "minute": 0
+                        },
+                        "offPeakStartTime": {
+                            "hour": 20,
+                            "minute": 0
+                        },
+                        "name": "Weekdays-etf1-test-use-agent-updates",
+                        "daysOfWeek": [
+                            "Tuesday"
+                        ],
+                        "rampUpLoadBalancingAlgorithm": "BreadthFirst",
+                        "rampUpMinimumHostsPct": 20,
+                        "rampUpCapacityThresholdPct": 80,
+                        "peakLoadBalancingAlgorithm": "DepthFirst",
+                        "rampDownLoadBalancingAlgorithm": "DepthFirst",
+                        "rampDownMinimumHostsPct": 0,
+                        "rampDownCapacityThresholdPct": 90,
+                        "rampDownForceLogoffUsers": true,
+                        "rampDownWaitTimeMinutes": 30,
+                        "rampDownNotificationMessage": "You will be logged off in 30 min. Make sure to save your work.",
+                        "rampDownStopHostsWhen": "ZeroActiveSessions",
+                        "offPeakLoadBalancingAlgorithm": "DepthFirst"
+                    }
+                ],
+                "hostPoolReferences": [
+                    {
+                        "hostPoolArmPath": "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('hostpools_vdpool_etf1_test_use_001_name'))]",
+                        "scalingPlanEnabled": true
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.DesktopVirtualization/scalingplans/pooledSchedules",
+            "apiVersion": "2025-03-01-preview",
+            "name": "[concat(parameters('scalingplans_vdscaling_etf1_test_use_001_name'), '/Weekdays-etf1-test-use')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DesktopVirtualization/scalingplans', parameters('scalingplans_vdscaling_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "scalingMethod": "PowerManage",
+                "createDelete": {},
+                "rampUpStartTime": {
+                    "hour": 7,
+                    "minute": 0
+                },
+                "peakStartTime": {
+                    "hour": 9,
+                    "minute": 0
+                },
+                "rampDownStartTime": {
+                    "hour": 18,
+                    "minute": 0
+                },
+                "offPeakStartTime": {
+                    "hour": 20,
+                    "minute": 0
+                },
+                "daysOfWeek": [
+                    "Monday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday"
+                ],
+                "rampUpLoadBalancingAlgorithm": "BreadthFirst",
+                "rampUpMinimumHostsPct": 20,
+                "rampUpCapacityThresholdPct": 80,
+                "peakLoadBalancingAlgorithm": "DepthFirst",
+                "rampDownLoadBalancingAlgorithm": "DepthFirst",
+                "rampDownMinimumHostsPct": 0,
+                "rampDownCapacityThresholdPct": 90,
+                "rampDownForceLogoffUsers": true,
+                "rampDownWaitTimeMinutes": 30,
+                "rampDownNotificationMessage": "You will be logged off in 30 min. Make sure to save your work.",
+                "rampDownStopHostsWhen": "ZeroActiveSessions",
+                "offPeakLoadBalancingAlgorithm": "DepthFirst"
+            }
+        },
+        {
+            "type": "Microsoft.DesktopVirtualization/scalingplans/pooledSchedules",
+            "apiVersion": "2025-03-01-preview",
+            "name": "[concat(parameters('scalingplans_vdscaling_etf1_test_use_001_name'), '/Weekdays-etf1-test-use-agent-updates')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DesktopVirtualization/scalingplans', parameters('scalingplans_vdscaling_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "scalingMethod": "PowerManage",
+                "createDelete": {},
+                "rampUpStartTime": {
+                    "hour": 7,
+                    "minute": 0
+                },
+                "peakStartTime": {
+                    "hour": 9,
+                    "minute": 0
+                },
+                "rampDownStartTime": {
+                    "hour": 19,
+                    "minute": 0
+                },
+                "offPeakStartTime": {
+                    "hour": 20,
+                    "minute": 0
+                },
+                "daysOfWeek": [
+                    "Tuesday"
+                ],
+                "rampUpLoadBalancingAlgorithm": "BreadthFirst",
+                "rampUpMinimumHostsPct": 20,
+                "rampUpCapacityThresholdPct": 80,
+                "peakLoadBalancingAlgorithm": "DepthFirst",
+                "rampDownLoadBalancingAlgorithm": "DepthFirst",
+                "rampDownMinimumHostsPct": 0,
+                "rampDownCapacityThresholdPct": 90,
+                "rampDownForceLogoffUsers": true,
+                "rampDownWaitTimeMinutes": 30,
+                "rampDownNotificationMessage": "You will be logged off in 30 min. Make sure to save your work.",
+                "rampDownStopHostsWhen": "ZeroActiveSessions",
+                "offPeakLoadBalancingAlgorithm": "DepthFirst"
+            }
+        },
+        {
+            "type": "Microsoft.DesktopVirtualization/scalingplans/pooledSchedules",
+            "apiVersion": "2025-03-01-preview",
+            "name": "[concat(parameters('scalingplans_vdscaling_etf1_test_use_001_name'), '/Weekend-etf1-test-use')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DesktopVirtualization/scalingplans', parameters('scalingplans_vdscaling_etf1_test_use_001_name'))]"
+            ],
+            "properties": {
+                "scalingMethod": "PowerManage",
+                "createDelete": {},
+                "rampUpStartTime": {
+                    "hour": 9,
+                    "minute": 0
+                },
+                "peakStartTime": {
+                    "hour": 10,
+                    "minute": 0
+                },
+                "rampDownStartTime": {
+                    "hour": 16,
+                    "minute": 0
+                },
+                "offPeakStartTime": {
+                    "hour": 18,
+                    "minute": 0
+                },
+                "daysOfWeek": [
+                    "Saturday",
+                    "Sunday"
+                ],
+                "rampUpLoadBalancingAlgorithm": "DepthFirst",
+                "rampUpMinimumHostsPct": 0,
+                "rampUpCapacityThresholdPct": 90,
+                "peakLoadBalancingAlgorithm": "DepthFirst",
+                "rampDownLoadBalancingAlgorithm": "DepthFirst",
+                "rampDownMinimumHostsPct": 0,
+                "rampDownCapacityThresholdPct": 90,
+                "rampDownForceLogoffUsers": true,
+                "rampDownWaitTimeMinutes": 30,
+                "rampDownNotificationMessage": "You will be logged off in 30 min. Make sure to save your work.",
+                "rampDownStopHostsWhen": "ZeroActiveSessions",
+                "offPeakLoadBalancingAlgorithm": "DepthFirst"
+            }
+        },
+        {
+            "type": "Microsoft.DesktopVirtualization/workspaces",
+            "apiVersion": "2025-03-01-preview",
+            "name": "[parameters('workspaces_vdws_etf1_test_use_001_name')]",
+            "location": "eastus",
+            "dependsOn": [
+                "[resourceId('Microsoft.DesktopVirtualization/applicationgroups', parameters('applicationgroups_vdag_desktop_etf1_test_use_001_name'))]"
+            ],
+            "tags": {
+                "cm-resource-parent": "/subscriptions/bd67233d-38af-45db-a98e-a10a2b443d8d/resourceGroups/rg-avd-etf1-test-use-service-objects/providers/Microsoft.DesktopVirtualization/hostpools/vdpool-etf1-test-use-001",
+                "Environment": "Test",
+                "ServiceWorkload": "AVD",
+                "CreationTimeUTC": "20260220T165154Z"
+            },
+            "properties": {
+                "publicNetworkAccess": "Enabled",
+                "friendlyName": "Workspace etf1 Test eastus 001",
+                "applicationGroupReferences": [
+                    "[resourceId('Microsoft.DesktopVirtualization/applicationgroups', parameters('applicationgroups_vdag_desktop_etf1_test_use_001_name'))]"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_kv_sec_etf1_test_use_vx_name'), '/domainJoinUserName')]",
+            "location": "eastus",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_sec_etf1_test_use_vx_name'))]"
+            ],
+            "tags": {
+                "cm-resource-parent": "/subscriptions/bd67233d-38af-45db-a98e-a10a2b443d8d/resourceGroups/rg-avd-etf1-test-use-service-objects/providers/Microsoft.DesktopVirtualization/hostpools/vdpool-etf1-test-use-001",
+                "Environment": "Test",
+                "ServiceWorkload": "AVD",
+                "CreationTimeUTC": "20260220T165154Z",
+                "Purpose": "Secrets for local admin and domain join credentials"
+            },
+            "properties": {
+                "contentType": "Domain join credentials",
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_kv_sec_etf1_test_use_vx_name'), '/domainJoinUserPassword')]",
+            "location": "eastus",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_sec_etf1_test_use_vx_name'))]"
+            ],
+            "tags": {
+                "cm-resource-parent": "/subscriptions/bd67233d-38af-45db-a98e-a10a2b443d8d/resourceGroups/rg-avd-etf1-test-use-service-objects/providers/Microsoft.DesktopVirtualization/hostpools/vdpool-etf1-test-use-001",
+                "Environment": "Test",
+                "ServiceWorkload": "AVD",
+                "CreationTimeUTC": "20260220T165154Z",
+                "Purpose": "Secrets for local admin and domain join credentials"
+            },
+            "properties": {
+                "contentType": "Domain join credentials",
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_kv_sec_etf1_test_use_vx_name'), '/hostPoolRegistrationToken')]",
+            "location": "eastus",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_sec_etf1_test_use_vx_name'))]"
+            ],
+            "properties": {
+                "contentType": "Host pool registration token for session hosts",
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_kv_sec_etf1_test_use_vx_name'), '/vmLocalUserName')]",
+            "location": "eastus",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_sec_etf1_test_use_vx_name'))]"
+            ],
+            "tags": {
+                "cm-resource-parent": "/subscriptions/bd67233d-38af-45db-a98e-a10a2b443d8d/resourceGroups/rg-avd-etf1-test-use-service-objects/providers/Microsoft.DesktopVirtualization/hostpools/vdpool-etf1-test-use-001",
+                "Environment": "Test",
+                "ServiceWorkload": "AVD",
+                "CreationTimeUTC": "20260220T165154Z",
+                "Purpose": "Secrets for local admin and domain join credentials"
+            },
+            "properties": {
+                "contentType": "Session host local user credentials",
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_kv_sec_etf1_test_use_vx_name'), '/vmLocalUserPassword')]",
+            "location": "eastus",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_sec_etf1_test_use_vx_name'))]"
+            ],
+            "tags": {
+                "cm-resource-parent": "/subscriptions/bd67233d-38af-45db-a98e-a10a2b443d8d/resourceGroups/rg-avd-etf1-test-use-service-objects/providers/Microsoft.DesktopVirtualization/hostpools/vdpool-etf1-test-use-001",
+                "Environment": "Test",
+                "ServiceWorkload": "AVD",
+                "CreationTimeUTC": "20260220T165154Z",
+                "Purpose": "Secrets for local admin and domain join credentials"
+            },
+            "properties": {
+                "contentType": "Session host local user credentials",
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        }
+    ]
+}

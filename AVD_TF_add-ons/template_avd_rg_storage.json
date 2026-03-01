@@ -1,0 +1,125 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storageAccounts_stfsletf1tvxs_name": {
+            "type": "SecureString"
+        },
+        "storageAccounts_stfsletf1tvxs_name_1": {
+            "defaultValue": "stfsletf1tvxs",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_etf1_test_use_001_externalid": {
+            "defaultValue": "/subscriptions/bd67233d-38af-45db-a98e-a10a2b443d8d/resourceGroups/rg-avd-etf1-test-use-network/providers/Microsoft.Network/virtualNetworks/vnet-etf1-test-use-001",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2025-01-01",
+            "name": "[parameters('storageAccounts_stfsletf1tvxs_name_1')]",
+            "location": "eastus",
+            "tags": {
+                "cm-resource-parent": "/subscriptions/bd67233d-38af-45db-a98e-a10a2b443d8d/resourceGroups/rg-avd-etf1-test-use-service-objects/providers/Microsoft.DesktopVirtualization/hostpools/vdpool-etf1-test-use-001",
+                "Environment": "Test",
+                "ServiceWorkload": "AVD",
+                "CreationTimeUTC": "20260220T165154Z"
+            },
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "kind": "FileStorage",
+            "properties": {
+                "defaultToOAuthAuthentication": false,
+                "publicNetworkAccess": "Enabled",
+                "allowCrossTenantReplication": true,
+                "isLocalUserEnabled": false,
+                "isSftpEnabled": false,
+                "minimumTlsVersion": "TLS1_2",
+                "allowBlobPublicAccess": false,
+                "allowSharedKeyAccess": true,
+                "largeFileSharesState": "Enabled",
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [
+                        {
+                            "id": "[concat(parameters('virtualNetworks_vnet_etf1_test_use_001_externalid'), '/subnets/snet-avd-etf1-test-use-001')]",
+                            "action": "Allow",
+                            "state": "Succeeded"
+                        }
+                    ],
+                    "ipRules": [],
+                    "defaultAction": "Deny"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "identity": {},
+                    "requireInfrastructureEncryption": true,
+                    "services": {
+                        "file": {
+                            "keyType": "Account",
+                            "enabled": true
+                        },
+                        "blob": {
+                            "keyType": "Account",
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot",
+                "customDomain": {
+                    "name": "[parameters('storageAccounts_stfsletf1tvxs_name')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices",
+            "apiVersion": "2025-01-01",
+            "name": "[concat(parameters('storageAccounts_stfsletf1tvxs_name_1'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stfsletf1tvxs_name_1'))]"
+            ],
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "properties": {
+                "protocolSettings": {
+                    "smb": {
+                        "multichannel": {
+                            "enabled": true
+                        }
+                    }
+                },
+                "cors": {
+                    "corsRules": []
+                },
+                "shareDeleteRetentionPolicy": {
+                    "enabled": true,
+                    "days": 7
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+            "apiVersion": "2025-01-01",
+            "name": "[concat(parameters('storageAccounts_stfsletf1tvxs_name_1'), '/default/fslogix-pc-etf1-test-use-001')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('storageAccounts_stfsletf1tvxs_name_1'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_stfsletf1tvxs_name_1'))]"
+            ],
+            "properties": {
+                "fileSharePaidBursting": {
+                    "paidBurstingEnabled": false
+                },
+                "accessTier": "Premium",
+                "shareQuota": 100,
+                "enabledProtocols": "SMB"
+            }
+        }
+    ]
+}
