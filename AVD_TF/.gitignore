@@ -1,0 +1,35 @@
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# Sensitive files
+*.tfvars
+
+# Local files
+*.log
+*.tmp
+
+# VS Code
+.vscode/
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Ignore PowerShell output
+*.ps1-output
+
+# Ignore Markdown preview cache
+*.md.cache
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore other temp files
+*.bak
+*.swp
+*.swo
+~*
