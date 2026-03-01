@@ -33,7 +33,7 @@ scaling_plan_time_zone          = "UTC"
 # SESSION HOST CREDENTIALS
 # ============================================================================
 avd_vm_local_user_name        = "your-local-admin"
-avd_vm_local_user_password    = "your-local-device---password *"
+avd_vm_local_user_password    = "your-local-device-admin-password"
 
 # ============================================================================
 # HOST POOL CONFIGURATION
