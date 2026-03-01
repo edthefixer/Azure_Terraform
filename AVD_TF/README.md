@@ -1,4 +1,4 @@
-# AVD2 Terraform Baseline (Accelerator-Aligned)
+# AVD Terraform Baseline (Accelerator-Aligned)
 
 This folder provides a Terraform baseline that mirrors the input options from the AVD Accelerator `deploy-baseline.bicep`. It is intended as a starting point so you can control naming, locations, and feature flags, then extend modules as needed. You can deploy using the Accelerator default of multiple resource groups or opt into a single resource group for all resources.
 
